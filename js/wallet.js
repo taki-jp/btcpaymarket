@@ -95,7 +95,7 @@ function initWallet() {
         createTableUnconfirmed(txs)
     
 
-        getBtcExchangeRate(function(usdrate){
+        getMonaExchangeRate(function(usdrate){
     //console.log("works1")
             //console.log(last_address)
             //console.log(usdrate)   
@@ -146,7 +146,7 @@ function refreshTables(address){
 
         getUnconfirmed(address, function(txs){
             createTableUnconfirmed(txs)
-            getBtcExchangeRate(function(usdrate){
+            getMonaExchangeRate(function(usdrate){
                 
                 getBalances(address, usdrate, function(){
                     getOrdersMatches(function(matches){
@@ -197,23 +197,23 @@ function getBalances(address, usdrate, callback){
     
 }
 
-function getBtcExchangeRate(callback){
+function getMonaExchangeRate(callback){
     
-    if(!sessionStorage.getItem("currentprice_btc") || sessionStorage.getItem("currentprice_btc") == ""){     
+    if(!sessionStorage.getItem("currentprice_mona") || sessionStorage.getItem("currentprice_mona") == ""){
         
-        var source_html = "https://api.coindesk.com/v1/bpi/currentprice.json"
+        var source_html = "https://public.bitbank.cc/mona_jpy/ticker"
         
         $.getJSON( source_html, function( apidata ) {  
       
-            sessionStorage.setItem("currentprice_btc", apidata.bpi.USD.rate_float)
+            sessionStorage.setItem("currentprice_mona", apidata.data.last)
             
-            callback(apidata.bpi.USD.rate_float)
+            callback(apidata.data.last)
         
         }).error(function() { callback(0) })
         
     } else {
         
-        callback(sessionStorage.getItem("currentprice_btc"))
+        callback(sessionStorage.getItem("currentprice_mona"))
         
     }
     
