@@ -92,11 +92,11 @@ function getOrdersMatches(callback){
 //}
 
 function getCurrentBlock(callback){
-    var source_html = "https://btc.blockr.io/api/v1/coin/info"
+    var source_html = "https://insight.bitpay.com/api/status"
     
     $.getJSON( source_html, function( data ) { 
-        sessionStorage.setItem("last_block", data.data.last_block.nb)
-        callback(data.data.last_block.nb)
+        sessionStorage.setItem("last_block", data.info.blocks)
+        callback(data.info.blocks)
     })
 }
 

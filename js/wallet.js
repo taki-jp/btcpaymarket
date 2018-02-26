@@ -1,9 +1,37 @@
 var bitcore = require('bitcore-lib');
 
+const mainnet = { hashGenesisBlock: 'ff9f1c0116d19de7c9963845e129f9ed1bfc0b376eb54fd7afa42e0d418c8bb6',
+    port: 9401,
+    portRpc: 9402,
+    protocol: { magic: 3686187259 },
+    seedsDns: [ 'dnsseed.monacoin.org' ],
+    versions:
+        { bip32: { private: 76066276, public: 76067358 },
+          bip44: 22,
+          private: 176,
+          private_old: 178,
+          public: 50,
+          scripthash: 55,
+          scripthash2: 5 },
+          name: 'livenet',
+          unit: 'MONA',
+          testnet: false,
+          alias: 'mainnet',
+          pubkeyhash: 50,
+          privatekey: 176,
+          privatekey_old: 178,
+          scripthash: 55,
+          xpubkey: 76067358,
+          xprivkey: 76066276,
+          networkMagic: 4223710939,
+          dnsSeeds: [ 'dnsseed.monacoin.org' ] };
+bitcore.Networks.mainnet = bitcore.Networks.add(mainnet);
+bitcore.Networks.livenet = bitcore.Networks.mainnet;
 const NETWORK = bitcore.Networks.livenet
 //const NETWORK = bitcore.Networks.testnet
 
-const INSIGHT_SERVER = "insight.bitpay.com"
+
+const INSIGHT_API_SERVER = "mona.insight.monaco-ex.org/insight-api-monacoin"
 
 
 function dismissDisclaimer(){
@@ -238,15 +266,15 @@ function getPoloRate(asset, callback){
 
 function getBtcBalance(address, callback){
     
-    var source_html = "https://btc.blockr.io/api/v1/address/info/"+address 
+    var source_html = "https://"+INSIGHT_API_SERVER+"/addr/"+address 
     
     $.getJSON( source_html, function( apidata ) { 
         
-        //console.log(apidata)
+        console.log(apidata)
           
-        var balance = parseFloat(apidata.data.balance); //blockr
+        var balance = parseFloat(apidata.balance);
              
-        //console.log(balance)
+        console.log(balance)
         
         callback(balance)
         
@@ -256,7 +284,7 @@ function getBtcBalance(address, callback){
 
 function getUnconfirmed(address, callback){
     
-     var source_html = "https://api.blockcypher.com/v1/btc/main/addrs/"+address
+     var source_html = "https://"+INSIGHT_API_SERVER+"/addr/"+address+'/utxo'
         
         $.getJSON( source_html, function( data ) { 
       
@@ -502,34 +530,26 @@ function getSogImageUrls(callback){
     
     if(!sessionStorage.getItem("sog_images")){     
         
-        var source_html = window.location.pathname+"php/sogCards.php"
-
-        $.getJSON( source_html, function( apidata ) {  
-            
-            var pepe_html = window.location.pathname+"php/pepeCards.php"
-            
-            $.getJSON( pepe_html, function( pepes ) {
-                
-                var alldata = collect(apidata, pepes)
-                
-                //console.log(alldata)
-
-                sessionStorage.setItem("sog_images", JSON.stringify(alldata))
-
+        var source_html = "https://card.mona.jp/api/card_list"
+        $.getJSON( source_html, function( apidata ) {
+            var all = apidata.list.join(",")
+            var pair = {}
+            $.getJSON ("https://card.mona.jp/api/card_detail?assets="+all, function(assets) {
+                assets.details.map(function(x) {
+                    pair[x.asset_common_name] = x.imgur_url
+                })
+                sessionStorage.setItem("sog_images", JSON.stringify(pair))
                 callback()
             }).error(function(){
-                sessionStorage.setItem("sog_images", JSON.stringify(apidata))
+                sessionStorage.setItem("sog_images", JSON.stringify(pair))
                 callback()
             })
-        
         }).error(function(){
+            sessionStorage.setItem("sog_images", JSON.stringify(pair))
             callback()
         })
-        
     } else {
-        
         callback()
-        
     }
     
 }
@@ -581,7 +601,7 @@ function getutxos(add_from, mnemonic, amountremaining, callback){
 
     var privkey = getprivkey(add_from, mnemonic);
      
-    var source_html = "https://"+INSIGHT_SERVER+"/api/addr/"+add_from+"/utxo";     
+    var source_html = "https://"+INSIGHT_API_SERVER+"/addr/"+add_from+"/utxo";     
     
     var total_utxo = new Array();   
        
