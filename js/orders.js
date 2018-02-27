@@ -165,7 +165,7 @@ function calcAssetAmount(asset, btc, callback) {
   
                                     $("#dialogSellAsset-cost").data("valid", true)
                                     $("#dialogSellAsset-cost").data("total", btcAmount)
-                                    var displayTotal = "<div>" + parseFloat(btcAmount).toFixed(8) + " "+BTC+"</div><div class='small showUsd' style='font-style: italic; color: #266121;'>($"+usdperorder+")</div"
+                                    var displayTotal = "<div>" + parseFloat(btcAmount).toFixed(8) + " "+BTC+"</div><div class='small showUsd' style='font-style: italic; color: #266121;'>("+usdperorder+"JPY)</div>"
                                     callback(displayTotal)   
                                 }
                             }
@@ -235,7 +235,7 @@ function calcBtcOrderAmount(inputval, callback) {
                                 $("#dialogBuyAsset-cost").data("valid", true)
                                 $("#dialogBuyAsset-cost").data("total", total.toFixed(8))
                                 
-                                var displayTotal = "<div>" + total.toFixed(8) + " "+BTC+"</div><div class='small showUsd' style='font-style: italic; color: #266121;'>($"+usdperorder+")</div"
+                                var displayTotal = "<div>" + total.toFixed(8) + " "+BTC+"</div><div class='small showUsd' style='font-style: italic; color: #266121;'>("+usdperorder+"JPY)</div"
                                 
                                 callback(displayTotal)   
                             }
@@ -279,7 +279,7 @@ function createTableOrders(orders, currentblock){
             var usd_btc = sessionStorage.getItem("currentprice_btc");
             var usdperasset = (btcperasset * usd_btc).toFixed(2)
             
-            if (usdperasset == 0 ) {usdperasset = "<$0.01"} else {usdperasset = "$"+usdperasset}
+            if (usdperasset == 0 ) {usdperasset = "<0.01JPY"} else {usdperasset = usdperasset+"JPY"}
             //var time_remaining = (orders[i].expire_index-currentblock) 
             
             var time_remaining = ((orders[i].expire_index-currentblock) * 10 * 60).toTimeFormat() 
@@ -461,7 +461,7 @@ function createTableMatches(matches, currentblock){
                 
                 var usd_btc = sessionStorage.getItem("currentprice_btc");
                 var usd_cost = (sell_qty * usd_btc).toFixed(2)
-                if (usd_cost == 0 ) {usd_cost = "<$0.01"} else {usd_cost = "$"+usd_cost}
+                if (usd_cost == 0 ) {usd_cost = "< 0.01JPY"} else {usd_cost = usd_cost+'JPY'}
 
                 if(matches[i].status == "pending") {
                     var time_remaining = ((matches[i].match_expire_index-currentblock) * 10 * 60).toTimeFormat() 
@@ -587,7 +587,7 @@ function buyAssetModal(tx_index, owner){
                     var usd_btc = sessionStorage.getItem("currentprice_btc");
                     var usdperasset = (btcperasset * usd_btc).toFixed(2)
 
-                    if (usdperasset == 0 ) {usdperasset = "<$0.01"} else {usdperasset = "($"+usdperasset+")"}
+                    if (usdperasset == 0 ) {usdperasset = "< 0.01JPY"} else {usdperasset = "("+usdperasset+"JPY)"}
                     $(this).find("#dialogBuyAsset-usd").html(usdperasset)
                     
                     var btcBal = $("#btcBalance").html()
@@ -595,7 +595,7 @@ function buyAssetModal(tx_index, owner){
                     
                     var btcBalUsd = (btcBal * usd_btc).toFixed(2)
                     
-                    $(this).find("#dialogBuyAsset-btcBalance-usd").html("($"+btcBalUsd+")")
+                    $(this).find("#dialogBuyAsset-btcBalance-usd").html("("+btcBalUsd+"JPY)")
                     
                     $(this).find("#dialogBuyAsset-rate").data({asset_remaining: thisorder.asset_remaining, btc_remaining: thisorder.btc_remaining, divisible: thisorder.divisible})
                     
@@ -642,14 +642,14 @@ function buyAssetModal(tx_index, owner){
                         var usd_btc = sessionStorage.getItem("currentprice_btc");
                         var usdperasset = (costandfees * usd_btc).toFixed(2)
 
-                        if (usdperasset == 0 ) {usdperasset = "<$0.01"} else {usdperasset = "($"+usdperasset+")"}
+                        if (usdperasset == 0 ) {usdperasset = "< 0.01JPY"} else {usdperasset = "("+usdperasset+"JPY)"}
                         $(this).find("#dialogBuyAssetPreview-usd").html(usdperasset)
                         
                         var usdperfees = (0.0006 * usd_btc).toFixed(2)
                         var usdperbtcAmount = (btcAmount * usd_btc).toFixed(2)
                         
-                        $(this).find("#dialogBuyAssetPreview-btctotal-usd").html("($"+usdperbtcAmount+")")
-                        $(this).find("#dialogBuyAssetPreview-fees-usd").html("($"+usdperfees+")")
+                        $(this).find("#dialogBuyAssetPreview-btctotal-usd").html("("+usdperbtcAmount+"JPY)")
+                        $(this).find("#dialogBuyAssetPreview-fees-usd").html("("+usdperfees+"JPY)")
                     })
                     buyAssetDialog.setMessage($message);
                     
@@ -762,7 +762,7 @@ function sellAssetModal(asset, divisible, balance){
                         
                         var usd_btc = sessionStorage.getItem("currentprice_btc");
                         var usdperfee = (txfee * usd_btc).toFixed(2)
-                        $("#dialogSellAssetPreview-btccost-usd").html("($"+usdperfee+")")
+                        $("#dialogSellAssetPreview-btccost-usd").html("("+usdperfee+"JPY)")
                         
                         
                         $("#dialogSellAssetPreview-btccost").html(txfee)

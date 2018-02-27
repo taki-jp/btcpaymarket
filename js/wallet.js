@@ -214,7 +214,7 @@ function getBalances(address, usdrate, callback){
 //        console.log("usdrate: "+usdrate)
         
         var usd_amount = (btc * usdrate).toFixed(2)
-        if (usd_amount == 0) {usd_amount = "(<$0.01)"} else {usd_amount = "($"+usd_amount+")"}
+        if (usd_amount == 0) {usd_amount = "(< 0.01JPY)"} else {usd_amount = "("+usd_amount+"JPY)"}
         
         $("#btcBalance").html(btc)
 
