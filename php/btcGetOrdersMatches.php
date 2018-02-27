@@ -14,7 +14,7 @@ $client->authentication($cp_user, $cp_password);
 $address = array($_GET["addr"]);
 
 $block = 400000;
-$assets = array("BTC");
+$assets = array($BTC);
 $filters = array(array('field' => 'backward_asset', 'op' => 'IN', 'value' => $assets), array('field' => 'tx1_address', 'op' => 'IN', 'value' => $address));
 
 //array('field' => 'status', 'op' => 'IN', 'value' => array('pending', 'completed')), 
