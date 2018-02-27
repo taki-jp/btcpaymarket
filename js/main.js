@@ -184,7 +184,7 @@ $( document ).ready(function() {
     $(document).on("click", '.unconfirmedTx', function (event) {
         
         var txid = $(this).data("txid")
-        var url = 'https://chain.so/tx/BTC/'+txid
+        var url = INSIGHT_SERVER+'/tx/'+txid
     
         window.open(url)
         

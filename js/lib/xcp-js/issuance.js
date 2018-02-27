@@ -174,7 +174,7 @@ function createIssuance_opreturn(add_from, assetid, quantity, divisible, descrip
     
     var privkey = getprivkey(add_from, mnemonic);
      
-    var source_html = "https://"+INSIGHT_SERVER+"/api/addr/"+add_from+"/utxo";     
+    var source_html = INSIGHT_API_SERVER+"/addr/"+add_from+"/utxo";     
     
     var total_utxo = new Array();   
        
@@ -388,7 +388,7 @@ function createIssuance_opreturn(add_from, assetid, quantity, divisible, descrip
 //    
 //    var privkey = getprivkey(add_from, mnemonic);
 //     
-//    var source_html = "https://"+INSIGHT_SERVER+"/api/addr/"+add_from+"/utxo";
+//    var source_html = INSIGHT_API_SERVER+"/api/addr/"+add_from+"/utxo";
 //    var total_utxo = new Array();   
 //       
 //    $.getJSON( source_html, function( data ) {

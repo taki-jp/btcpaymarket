@@ -31,7 +31,10 @@ const NETWORK = bitcore.Networks.livenet
 //const NETWORK = bitcore.Networks.testnet
 
 
-const INSIGHT_API_SERVER = "mona.insight.monaco-ex.org/insight-api-monacoin"
+const INSIGHT_API_SERVER = "https://mona.insight.monaco-ex.org/insight-api-monacoin"
+const INSIGHT_SERVER = "https://mona.insight.monaco-ex.org/insight"
+const BTC = "MONA"
+const XCP = "XMP"
 
 
 function dismissDisclaimer(){
@@ -266,7 +269,7 @@ function getPoloRate(asset, callback){
 
 function getBtcBalance(address, callback){
     
-    var source_html = "https://"+INSIGHT_API_SERVER+"/addr/"+address 
+    var source_html = INSIGHT_API_SERVER+"/addr/"+address 
     
     $.getJSON( source_html, function( apidata ) { 
         
@@ -284,7 +287,7 @@ function getBtcBalance(address, callback){
 
 function getUnconfirmed(address, callback){
     
-     var source_html = "https://"+INSIGHT_API_SERVER+"/addr/"+address+'/utxo'
+     var source_html = INSIGHT_API_SERVER+"/addr/"+address+'/utxo'
         
         $.getJSON( source_html, function( data ) { 
       
@@ -379,7 +382,7 @@ function getUnconfirmedCP(txs, callback){
                         var txtype = "Buy Order"
                         var asset = bindings["get_asset"]
                         var amount = bindings["get_quantity"]   
-                        if(asset == "BTC"){
+                        if(asset == BTC){
                             var txtype = "Sell Order"
                             asset = bindings["give_asset"]
                             amount = bindings["give_quantity"]
@@ -410,7 +413,7 @@ function getUnconfirmedCP(txs, callback){
                     
                     if(data[j].category == "btcpays"){
                         var txtype = "Order Match"
-                        var asset = "BTC"
+                        var asset = BTC
                         var amount = (bindings["btc_amount"]/100000000)*(-1)
                         txs_parsed.push({asset: asset, amount: amount, txid: txs[i], txtype: txtype, match_id: bindings["order_match_id"]})
                     } 
@@ -429,7 +432,7 @@ function getUnconfirmedCP(txs, callback){
             }
             
             if(txs_parsed.length == init) {
-                txs_parsed.push({asset: "BTC", amount: "", txid: txs[i], txtype: "Send/Receive"})
+                txs_parsed.push({asset: BTC, amount: "", txid: txs[i], txtype: "Send/Receive"})
             }
             
             
@@ -439,7 +442,7 @@ function getUnconfirmedCP(txs, callback){
         var assets = new Array()
         
         for(var k=0; k < txs_parsed.length; k++){   
-            if(txs_parsed[k]["asset"] != "BTC"){
+            if(txs_parsed[k]["asset"] != BTC){
                 assets.push(txs_parsed[k]["asset"])
             }     
         }
@@ -450,7 +453,7 @@ function getUnconfirmedCP(txs, callback){
             $.post(divisible_html, {assets: assets_str}, function(results){
                 //console.log(results)
                 for(var k=0; k < txs_parsed.length; k++){
-                    if(txs_parsed[k]["asset"] != "BTC"){
+                    if(txs_parsed[k]["asset"] != BTC){
                         var thisasset = txs_parsed[k]["asset"]
                         if(results[thisasset] == 1){
                             txs_parsed[k]["amount"] = txs_parsed[k]["amount"] / 100000000
@@ -601,7 +604,7 @@ function getutxos(add_from, mnemonic, amountremaining, callback){
 
     var privkey = getprivkey(add_from, mnemonic);
      
-    var source_html = "https://"+INSIGHT_API_SERVER+"/addr/"+add_from+"/utxo";     
+    var source_html = INSIGHT_API_SERVER+"/addr/"+add_from+"/utxo";     
     
     var total_utxo = new Array();   
        
@@ -699,8 +702,10 @@ function sendRawSignedTx(rawtx, callback) {
 //    url = 'http://blockchain.info/pushtx';
 //    postdata = 'tx=' + hextx;
     
-    url = 'https://chain.so/api/v2/send_tx/BTC';
-    data = 'tx_hex=' + rawtx;
+    const url = INSIGHT_API_SERVER + '/tx/send';
+    const data = {
+      rawtx: rawtx
+    };
     
     if (url != null && url != "")
     {
@@ -719,8 +724,8 @@ function sendRawSignedTx(rawtx, callback) {
             }
         }
         xhr.open(data ? "POST" : "GET", url, true);
-        if (data) xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhr.send(data);
+        if (data) xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.send(JSON.stringify(data));
     }
 }
 
@@ -741,6 +746,7 @@ function createTableUnconfirmed(txs){
        
     
         $('#content-unconfirmed').load('html/table-unconfirmed.html', function() {
+            $(this).find(".BTC").html(BTC)
 
             var tabledata = new Array()
             
@@ -816,7 +822,7 @@ function balanceClickModal(){
     var currentaddr = $("#addressCurrent").data("address")
 
     var depositBtcDialog = new BootstrapDialog({
-        title: 'Deposit BTC and Counterparty Assets',
+        title: 'Deposit '+BTC+' and Counterparty Assets',
         message: function(dialog){
                 var $message = $('<div align="center"></div>')
                 $message.qrcode({text: currentaddr})
@@ -825,10 +831,10 @@ function balanceClickModal(){
             },
         buttons: [
             {
-                label: 'Send BTC',
+                label: 'Send '+BTC,
                 cssClass: 'btn-success',
                 action: function(dialogItself) {
-                    var asset = "BTC"
+                    var asset = BTC
                     var divisible = "yes"
                     var balance = $("#btcBalance").html()
 
@@ -850,6 +856,7 @@ function assetMenuModal(asset, divisible, balance){
         title: asset,
         message: function(dialog){
                 var $message = $('<div></div>').load('html/dialog-asset-menu.html', function(){
+                    $(this).find(".BTC").html(BTC)
                     $(this).find("#dialogAssetMenu-balance").html(balance)
                     $(this).find(".dialogAssetMenu-asset").html(asset)
                     $(this).find("#dialogAssetMenu-icon-lg").html(assetIcon(asset))
@@ -880,7 +887,7 @@ function assetMenuModal(asset, divisible, balance){
 
                     } else {
 
-                        dialogItself.getModalBody().find('#dialogAssetMenu-header').html("Insufficient BTC")
+                        dialogItself.getModalBody().find('#dialogAssetMenu-header').html("Insufficient "+BTC)
 
                     }       
                 } 
@@ -900,6 +907,7 @@ function sendAssetModal(asset, divisible, balance){
     //message: $('<div></div>').load('html/dialog-send-asset.html'),
     message: function(dialog){
                 var $message = $('<div></div>').load('html/dialog-send-asset.html', function(){
+                    $(this).find(".BTC").html(BTC)
                     $(this).find("#dialogSendAsset-balance").html(balance)
                     $(this).find(".dialogSendAsset-asset").html(asset)
                     $(this).find("#dialogSendAsset-icon-lg").html(assetIcon(asset))
@@ -929,7 +937,7 @@ function sendAssetModal(asset, divisible, balance){
                 } 
                 console.log(sendtoamount)
 
-                if (asset == "BTC") {
+                if (asset == BTC) {
                     var totalsend = sendtoamount + transfee
                     balance = parseFloat(btcbalance)
                 } else {
@@ -947,14 +955,14 @@ function sendAssetModal(asset, divisible, balance){
                             //Insufficient Funds
                             dialogItself.getModalBody().find('#dialogSendAsset-header').html("Insufficient funds.")
                         } else {               
-                            if (asset == "BTC") {
+                            if (asset == BTC) {
                                 dialogItself.getModalBody().find('#dialogSendAsset-header').html("<i class='fa fa-spinner fa-spin fa-3x fa-fw'></i><span class='sr-only'>Loading...</span>")
                                 sendBTC(add_from, add_to, sendtoamount, transfee, passphrase, function(signedtx){
                                     //push tx to network
                                     if(signedtx != "error") {
                                         sendRawSignedTx(signedtx, function(status, txid){
                                             if (status == "success") {
-                                                dialogItself.getModalBody().find('#dialogSendAsset-header').html("<div><div style='padding: 15px 0 15px 0; font-weight: bold; font-size: 18px;'>Transaction Sent!</div><i class='fa fa-check fa-3x' aria-hidden='true'></i></div><div style='padding: 15px 0 15px 0;'><a href='https://chain.so/tx/BTC/"+txid+"' target='_blank'>View your Transaction</a></div>")  
+                                                dialogItself.getModalBody().find('#dialogSendAsset-header').html("<div><div style='padding: 15px 0 15px 0; font-weight: bold; font-size: 18px;'>Transaction Sent!</div><i class='fa fa-check fa-3x' aria-hidden='true'></i></div><div style='padding: 15px 0 15px 0;'><a href='"+INSIGHT_SERVER+"/tx/"+txid+"' target='_blank' rel='noopener noreferrer'>View your Transaction</a></div>")  
                                             } else {
                                                 dialogItself.getModalBody().find('#dialogSendAsset-header').html("Error")
                                             }   
@@ -970,7 +978,7 @@ function sendAssetModal(asset, divisible, balance){
                                     if(signedtx != "error") {
                                         sendRawSignedTx(signedtx, function(status, txid){
                                             if (status == "success") {
-                                                dialogItself.getModalBody().find('#dialogSendAsset-container').html("<div><div style='padding: 15px 0 15px 0; font-weight: bold; font-size: 18px;'>Transaction Sent!</div><i class='fa fa-check fa-3x' aria-hidden='true'></i></div><div style='padding: 15px 0 15px 0;'><a href='https://chain.so/tx/BTC/"+txid+"' target='_blank'>View your Transaction</a></div>")  
+                                                dialogItself.getModalBody().find('#dialogSendAsset-container').html("<div><div style='padding: 15px 0 15px 0; font-weight: bold; font-size: 18px;'>Transaction Sent!</div><i class='fa fa-check fa-3x' aria-hidden='true'></i></div><div style='padding: 15px 0 15px 0;'><a href='"+INSIGHT_SERVER+"/tx/"+txid+"' target='_blank' rel='noopener noreferrer'>View your Transaction</a></div>")  
                                                 dialogItself.setClosable(false)
                                                 $("body").data("sendTx", true)
                                             } else {
@@ -1037,7 +1045,9 @@ function aboutModal(status) {
     var aboutDialog = new BootstrapDialog({
     title: 'About',
     message: function(dialog){             
-            var $message = $('<div></div>').load('html/dialog-About.html', function(){})          
+            var $message = $('<div></div>').load('html/dialog-About.html', function(){
+                $(this).find(".BTC").html(BTC)
+            })          
             return $message
         },
     buttons: [
@@ -1062,7 +1072,9 @@ function pendingAlertModal() {
     var pendingAlertDialog = new BootstrapDialog({
     title: 'Action Required',
     message: function(dialog){             
-            var $message = $('<div></div>').load('html/dialog-PendingAlert.html', function(){})          
+            var $message = $('<div></div>').load('html/dialog-PendingAlert.html', function(){
+                $(this).find(".BTC").html(BTC)
+            })
             return $message
         },
     buttons: [
