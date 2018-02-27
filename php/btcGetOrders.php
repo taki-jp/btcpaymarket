@@ -13,7 +13,7 @@ $client->authentication($cp_user, $cp_password);
 
 //$block = 380000;
 
-$block = $_GET["currentblock"]-10000;
+$block = $_GET["currentblock"]-57600;
 $assets = array($BTC);
 $filters = array(array('field' => 'get_asset', 'op' => 'IN', 'value' => $assets));
 
