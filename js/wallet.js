@@ -717,6 +717,7 @@ function sendRawSignedTx(rawtx, callback) {
                     //success
                     console.log(xhr.responseText)
                     var checksuccess = jQuery.parseJSON(xhr.responseText)
+                    checksuccess.status = 'success'
                     callback(checksuccess.status, checksuccess.txid)
                 } else {
                     callback("error", "") //otherwise, some other code was returned
