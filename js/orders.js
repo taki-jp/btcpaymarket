@@ -282,7 +282,7 @@ function createTableOrders(orders, currentblock){
             if (usdperasset == 0 ) {usdperasset = "<0.01JPY"} else {usdperasset = usdperasset+"JPY"}
             //var time_remaining = (orders[i].expire_index-currentblock) 
             
-            var time_remaining = ((orders[i].expire_index-currentblock) * 10 * 60).toTimeFormat() 
+            var time_remaining = ((orders[i].expire_index-currentblock) * 90).toTimeFormat() 
             
             if(!Number.isInteger(asset_remaining)){
                 asset_remaining = asset_remaining.toFixed(8)
@@ -464,7 +464,7 @@ function createTableMatches(matches, currentblock){
                 if (usd_cost == 0 ) {usd_cost = "< 0.01JPY"} else {usd_cost = usd_cost+'JPY'}
 
                 if(matches[i].status == "pending") {
-                    var time_remaining = ((matches[i].match_expire_index-currentblock) * 10 * 60).toTimeFormat() 
+                    var time_remaining = ((matches[i].match_expire_index-currentblock) * 90).toTimeFormat() 
                     var statusClass = 'warning'
                     pendingExists = true
                 } else if(matches[i].status == "expired"){
