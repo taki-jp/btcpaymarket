@@ -232,7 +232,7 @@ function createIssuance_opreturn(add_from, assetid, quantity, divisible, descrip
 
                 var bytelength = datachunk_encoded.length / 2;
                 
-                var scriptstring = "OP_RETURN "+bytelength+" 0x"+datachunk_encoded;      
+                var scriptstring = "OP_RETURN OP_PUSHDATA1 "+bytelength+" 0x"+datachunk_encoded;
                 console.log(scriptstring);
                 
                 var data_script = new bitcore.Script(scriptstring);

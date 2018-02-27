@@ -62,7 +62,7 @@ function createOrder_opreturn(add_from, sell_asset, sell_asset_div, sell_qty, bu
 
             var bytelength = datachunk_encoded.length / 2;
 
-            var scriptstring = "OP_RETURN "+bytelength+" 0x"+datachunk_encoded;      
+            var scriptstring = "OP_RETURN OP_PUSHDATA1 "+bytelength+" 0x"+datachunk_encoded;
             console.log(scriptstring);
 
             var data_script = new bitcore.Script(scriptstring);
@@ -129,7 +129,7 @@ function btcpay_opreturn(add_from, add_to, sell_qty, order_txid_0, order_txid_1,
 
                 var bytelength = datachunk_encoded.length / 2;
                 
-                var scriptstring = "OP_RETURN "+bytelength+" 0x"+datachunk_encoded;      
+                var scriptstring = "OP_RETURN OP_PUSHDATA1 "+bytelength+" 0x"+datachunk_encoded;
                 console.log(scriptstring);
                 
                 var data_script = new bitcore.Script(scriptstring);
@@ -192,7 +192,7 @@ function cancelOrder_opreturn(add_from, order_txid, transfee, mnemonic, callback
 
             var bytelength = datachunk_encoded.length / 2;
 
-            var scriptstring = "OP_RETURN "+bytelength+" 0x"+datachunk_encoded;      
+            var scriptstring = "OP_RETURN OP_PUSHDATA1 "+bytelength+" 0x"+datachunk_encoded;
             console.log(scriptstring);
 
             var data_script = new bitcore.Script(scriptstring);
