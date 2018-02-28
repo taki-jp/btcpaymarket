@@ -315,7 +315,7 @@ $( document ).ready(function() {
             sessionStorage.setItem("currentprice_btc", "")
             refreshTables(address)
         }
-    }, 600000) //refresh at 10 min interval
+    }, 70000) //refresh at 70 sec interval
 //    }, 15000) //for testing, 15 sec interval
    
     
