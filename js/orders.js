@@ -880,7 +880,7 @@ function btcpayModal(txdata){
                 action: function(dialogItself) {
     
                     var passphrase = sessionStorage.getItem("passphrase")
-                    var transfee_satoshis = 50000
+                    var transfee_satoshis = 54600
                     
                     console.log(txdata.sell_qty)
                     

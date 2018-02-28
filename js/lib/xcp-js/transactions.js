@@ -239,7 +239,7 @@ function sendXCP_opreturn(add_from, add_to, asset, asset_total, btc_total, trans
             transaction.addOutput(xcpdata_opreturn);
 
             console.log(satoshi_change);
-            if (satoshi_change > 5459) {
+            if (satoshi_change > 54600) {
                 transaction.change(add_from);
             }
 

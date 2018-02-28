@@ -80,7 +80,7 @@ function createOrder_opreturn(add_from, sell_asset, sell_asset_div, sell_qty, bu
 
             console.log(satoshi_change);
 
-            if (satoshi_change > 5459) {
+            if (satoshi_change > 54600) {
                 transaction.change(add_from);
             }
 
@@ -149,7 +149,7 @@ function btcpay_opreturn(add_from, add_to, sell_qty, order_txid_0, order_txid_1,
 
                 console.log(satoshi_change);
 
-                if (satoshi_change > 5459) {
+                if (satoshi_change > 54600) {
                     transaction.change(add_from);
                 }
       

@@ -250,7 +250,7 @@ function createIssuance_opreturn(add_from, assetid, quantity, divisible, descrip
 
                 console.log(satoshi_change);
 
-                if (satoshi_change > 5459) {
+                if (satoshi_change > 54600) {
                     transaction.change(add_from);
                 }
 
