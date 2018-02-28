@@ -851,7 +851,7 @@ function sellAssetModal(asset, divisible, balance){
 function btcpayModal(txdata){
     
     var btcpayDialog = new BootstrapDialog({
-        title: 'Send MON to complete order',
+        title: 'Send MONA to complete order',
         message: function(dialog){
                 var $message = $('<div></div>').load('html/dialog-btcpay.html', function(){
                     $(this).find(".BTC").html(BTC)
