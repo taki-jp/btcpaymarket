@@ -13,8 +13,8 @@ $client->authentication($cp_user, $cp_password);
 
 //$block = 380000;
 
-$block = $_GET["currentblock"]-10000;
-$assets = array("BTC");
+$block = $_GET["currentblock"]-57600;
+$assets = array($BTC);
 $filters = array(array('field' => 'get_asset', 'op' => 'IN', 'value' => $assets));
 
 $orders_result = $client->execute('get_orders', array('filters' => $filters, 'filterop' => "AND", 'start_block' => $block));
@@ -25,12 +25,13 @@ for($i=0; $i < count($orders_result); $i++){
     $give_assets[$i] = $orders_result[$i]["give_asset"];
 }
 
-//array_push($give_assets, "XCP");
+//array_push($give_assets, $XCP);
 
 $filters = array(array('field' => 'asset', 'op' => 'IN', 'value' => $give_assets));
 $issuances_result = $client->execute('get_issuances', array('filters' => $filters, 'filterop' => "AND"));
 
 $assets_divisible = array();
+$assets_divisible[$XCP] = 1;
 
 for($i=0; $i < count($issuances_result); $i++){
     $assets_divisible[$issuances_result[$i]["asset"]] = $issuances_result[$i]["divisible"];

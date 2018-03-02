@@ -57,7 +57,7 @@ function getOrdersMatches(callback){
 //"tx0_index": 515943,
 //"fee_paid": 0,
 //"forward_quantity": 150000000,
-//"backward_asset": "BTC",
+//"backward_asset": BTC,
 //"tx1_block_index": 422670,
 //"block_index": 422670,
 //"forward_asset": "DOUGH",
@@ -92,11 +92,11 @@ function getOrdersMatches(callback){
 //}
 
 function getCurrentBlock(callback){
-    var source_html = "https://btc.blockr.io/api/v1/coin/info"
+    var source_html = INSIGHT_API_SERVER + "/status"
     
     $.getJSON( source_html, function( data ) { 
-        sessionStorage.setItem("last_block", data.data.last_block.nb)
-        callback(data.data.last_block.nb)
+        sessionStorage.setItem("last_block", data.info.blocks)
+        callback(data.info.blocks)
     })
 }
 
@@ -132,7 +132,7 @@ function calcAssetAmount(asset, btc, callback) {
     
     if(asset.length == 0 || btc.length == 0){
         //blank
-        callback("0 BTC each")
+        callback("0 "+BTC+" each")
     } else {
     
         checkValidBtcAmount(btcAmount, function(response){
@@ -144,7 +144,7 @@ function calcAssetAmount(asset, btc, callback) {
                 } else {
                     if (btcAmount <= 0.001) {
                         //invalid
-                        callback("Valid orders must be greater than 0.001 BTC")
+                        callback("Valid orders must be greater than 0.001 "+BTC)
                     } else {
                         if (parseFloat(asset) > parseFloat(assetBalance)) {
                             //only asset_remaining available!
@@ -165,7 +165,7 @@ function calcAssetAmount(asset, btc, callback) {
   
                                     $("#dialogSellAsset-cost").data("valid", true)
                                     $("#dialogSellAsset-cost").data("total", btcAmount)
-                                    var displayTotal = "<div>" + parseFloat(btcAmount).toFixed(8) + " BTC</div><div class='small showUsd' style='font-style: italic; color: #266121;'>($"+usdperorder+")</div"
+                                    var displayTotal = "<div>" + parseFloat(btcAmount).toFixed(8) + " "+BTC+"</div><div class='small showUsd' style='font-style: italic; color: #266121;'>("+usdperorder+"JPY)</div>"
                                     callback(displayTotal)   
                                 }
                             }
@@ -202,7 +202,7 @@ function calcBtcOrderAmount(inputval, callback) {
     
     if(inputval.length == 0){
         //blank
-        callback("0 BTC")
+        callback("0 "+BTC)
     }else{
         if(isNaN(inputval) == true || inputval <= 0 || $.isNumeric( inputval ) == false) {
             //invalid
@@ -210,7 +210,7 @@ function calcBtcOrderAmount(inputval, callback) {
         } else {
             if (total <= 0.001) {
                 //invalid
-                callback("Valid orders must be greater than 0.001 BTC")
+                callback("Valid orders must be greater than 0.001 "+BTC)
             } else {
                 if (inputval > asset_remaining) {
                     //only asset_remaining available!
@@ -219,7 +219,7 @@ function calcBtcOrderAmount(inputval, callback) {
                 } else {    
                     if (total > btcbalance) {
                         //you don't have enough btc!
-                        callback("You don't have enough BTC!")
+                        callback("You don't have enough "+BTC+"!")
                     } else {
                         if(divisible == 0 && (isInt(inputval) == false)) {
                             callback("Asset is not divisible.  Whole numbers only!")
@@ -235,7 +235,7 @@ function calcBtcOrderAmount(inputval, callback) {
                                 $("#dialogBuyAsset-cost").data("valid", true)
                                 $("#dialogBuyAsset-cost").data("total", total.toFixed(8))
                                 
-                                var displayTotal = "<div>" + total.toFixed(8) + " BTC</div><div class='small showUsd' style='font-style: italic; color: #266121;'>($"+usdperorder+")</div"
+                                var displayTotal = "<div>" + total.toFixed(8) + " "+BTC+"</div><div class='small showUsd' style='font-style: italic; color: #266121;'>("+usdperorder+"JPY)</div"
                                 
                                 callback(displayTotal)   
                             }
@@ -260,7 +260,9 @@ function createTableOrders(orders, currentblock){
     
     
     $('#content').load('html/orderstable.html', function() {
+            $(this).find(".BTC").html(BTC)
     $('#yourorders').load('html/table-yourorders.html', function() {
+            $(this).find(".BTC").html(BTC)
         
         var yourordercount = 0;
           
@@ -277,10 +279,10 @@ function createTableOrders(orders, currentblock){
             var usd_btc = sessionStorage.getItem("currentprice_btc");
             var usdperasset = (btcperasset * usd_btc).toFixed(2)
             
-            if (usdperasset == 0 ) {usdperasset = "<$0.01"} else {usdperasset = "$"+usdperasset}
+            if (usdperasset == 0 ) {usdperasset = "<0.01JPY"} else {usdperasset = usdperasset+"JPY"}
             //var time_remaining = (orders[i].expire_index-currentblock) 
             
-            var time_remaining = ((orders[i].expire_index-currentblock) * 10 * 60).toTimeFormat() 
+            var time_remaining = ((orders[i].expire_index-currentblock) * 90).toTimeFormat() 
             
             if(!Number.isInteger(asset_remaining)){
                 asset_remaining = asset_remaining.toFixed(8)
@@ -436,6 +438,7 @@ function createTableMatches(matches, currentblock){
         }
     
         $('#content-matches').load('html/table-matches.html', function() {
+            $(this).find(".BTC").html(BTC)
 
             //var unconfirmed = $.parseJSON(sessionStorage.getItem("unconfirmed"))
             
@@ -458,10 +461,10 @@ function createTableMatches(matches, currentblock){
                 
                 var usd_btc = sessionStorage.getItem("currentprice_btc");
                 var usd_cost = (sell_qty * usd_btc).toFixed(2)
-                if (usd_cost == 0 ) {usd_cost = "<$0.01"} else {usd_cost = "$"+usd_cost}
+                if (usd_cost == 0 ) {usd_cost = "< 0.01JPY"} else {usd_cost = usd_cost+'JPY'}
 
                 if(matches[i].status == "pending") {
-                    var time_remaining = ((matches[i].match_expire_index-currentblock) * 10 * 60).toTimeFormat() 
+                    var time_remaining = ((matches[i].match_expire_index-currentblock) * 90).toTimeFormat() 
                     var statusClass = 'warning'
                     pendingExists = true
                 } else if(matches[i].status == "expired"){
@@ -560,13 +563,14 @@ function buyAssetModal(tx_index, owner){
     console.log(maxasset)
     
     
-    var orderLink = "btcpaymarket.com/?i="+thisorder.tx_index
-    var shareText = "Buy "+asset+" for "+btcperasset+" BTC at " + orderLink
+    var orderLink = "ticketcounter.monaco-ex.com/?i="+thisorder.tx_index
+    var shareText = "Buy "+asset+" for "+btcperasset+" "+BTC+" at " + orderLink
 
     var buyAssetDialog = new BootstrapDialog({
         title: 'Buy '+asset,
         message: function(dialog){
                 var $message = $('<div></div>').load('html/dialog-buy-asset.html', function(){
+                    $(this).find(".BTC").html(BTC)
                     $(this).find("#dialogBuyAsset-maxasset").html(maxasset)
                     $(this).find("#dialogBuyAsset-rate").html(btcperasset)
                     $(this).find("#dialogBuyAsset-icon-lg").html(assetIcon(asset))
@@ -583,7 +587,7 @@ function buyAssetModal(tx_index, owner){
                     var usd_btc = sessionStorage.getItem("currentprice_btc");
                     var usdperasset = (btcperasset * usd_btc).toFixed(2)
 
-                    if (usdperasset == 0 ) {usdperasset = "<$0.01"} else {usdperasset = "($"+usdperasset+")"}
+                    if (usdperasset == 0 ) {usdperasset = "< 0.01JPY"} else {usdperasset = "("+usdperasset+"JPY)"}
                     $(this).find("#dialogBuyAsset-usd").html(usdperasset)
                     
                     var btcBal = $("#btcBalance").html()
@@ -591,7 +595,7 @@ function buyAssetModal(tx_index, owner){
                     
                     var btcBalUsd = (btcBal * usd_btc).toFixed(2)
                     
-                    $(this).find("#dialogBuyAsset-btcBalance-usd").html("($"+btcBalUsd+")")
+                    $(this).find("#dialogBuyAsset-btcBalance-usd").html("("+btcBalUsd+"JPY)")
                     
                     $(this).find("#dialogBuyAsset-rate").data({asset_remaining: thisorder.asset_remaining, btc_remaining: thisorder.btc_remaining, divisible: thisorder.divisible})
                     
@@ -626,6 +630,7 @@ function buyAssetModal(tx_index, owner){
                     
                     var btcperasset = $("#dialogBuyAsset-rate").html()
                     $message = $('<div></div>').load('html/dialog-buy-asset-preview.html', function(){
+                        $(this).find(".BTC").html(BTC)
                         $("#dialogBuyAssetPreview-btctotal").html(btcAmount)
                         $("#dialogBuyAssetPreview-icon-lg").html(assetIcon(asset))
                         $("#dialogBuyAssetPreview-rate").html(rate)
@@ -637,14 +642,14 @@ function buyAssetModal(tx_index, owner){
                         var usd_btc = sessionStorage.getItem("currentprice_btc");
                         var usdperasset = (costandfees * usd_btc).toFixed(2)
 
-                        if (usdperasset == 0 ) {usdperasset = "<$0.01"} else {usdperasset = "($"+usdperasset+")"}
+                        if (usdperasset == 0 ) {usdperasset = "< 0.01JPY"} else {usdperasset = "("+usdperasset+"JPY)"}
                         $(this).find("#dialogBuyAssetPreview-usd").html(usdperasset)
                         
                         var usdperfees = (0.0006 * usd_btc).toFixed(2)
                         var usdperbtcAmount = (btcAmount * usd_btc).toFixed(2)
                         
-                        $(this).find("#dialogBuyAssetPreview-btctotal-usd").html("($"+usdperbtcAmount+")")
-                        $(this).find("#dialogBuyAssetPreview-fees-usd").html("($"+usdperfees+")")
+                        $(this).find("#dialogBuyAssetPreview-btctotal-usd").html("("+usdperbtcAmount+"JPY)")
+                        $(this).find("#dialogBuyAssetPreview-fees-usd").html("("+usdperfees+"JPY)")
                     })
                     buyAssetDialog.setMessage($message);
                     
@@ -659,7 +664,7 @@ function buyAssetModal(tx_index, owner){
                 cssClass: 'btn-success hidden',
                 action: function(dialogItself) {
                     
-                    var sell_asset = "BTC"
+                    var sell_asset = BTC
                     var sell_asset_div = 1
                     var sell_qty = $("#dialogBuyAssetPreview-btctotal").html()
                     
@@ -677,7 +682,7 @@ function buyAssetModal(tx_index, owner){
                     createOrder_opreturn(currentaddr, sell_asset, sell_asset_div, sell_qty, buy_asset, buy_asset_div, buy_qty, expiration, transfee, passphrase, function(signedtx){
                         sendRawSignedTx(signedtx, function(status, txid){
                             if (status == "success") {
-                                dialogItself.getModalBody().find('#dialogBuyAssetPreview-container').html("<div><div style='padding: 15px 0 15px 0; font-weight: bold; font-size: 18px;'>Transaction Sent!</div><i class='fa fa-check fa-3x' aria-hidden='true'></i></div><div style='padding: 15px 0 15px 0;'><a href='https://chain.so/tx/BTC/"+txid+"' target='_blank'>View your Transaction</a></div>")  
+                                dialogItself.getModalBody().find('#dialogBuyAssetPreview-container').html("<div><div style='padding: 15px 0 15px 0; font-weight: bold; font-size: 18px;'>Transaction Sent!</div><i class='fa fa-check fa-3x' aria-hidden='true'></i></div><div style='padding: 15px 0 15px 0;'><a href='"+INSIGHT_SERVER+"/tx/"+txid+"' target='_blank' rel='noopener noreferrer'>View your Transaction</a></div>")  
                                 dialogItself.setClosable(false)  
                                 
                                 $("body").data("sendTx", true)
@@ -729,6 +734,7 @@ function sellAssetModal(asset, divisible, balance){
         title: 'Sell '+asset,
         message: function(dialog){
                 var $message = $('<div></div>').load('html/dialog-sell-asset.html', function(){
+                    $(this).find(".BTC").html(BTC)
                     $(this).find("#dialogSellAsset-balance").html(balance)
                     $(this).find("#dialogSellAsset-balance").data("divisible", divisible)
                     $(this).find("#dialogSellAsset-icon-lg").html(assetIcon(asset))
@@ -751,11 +757,12 @@ function sellAssetModal(asset, divisible, balance){
                     var txfee = 0.0001
                     
                     $message = $('<div></div>').load('html/dialog-sell-asset-preview.html', function(){
+                        $(this).find(".BTC").html(BTC)
                         
                         
                         var usd_btc = sessionStorage.getItem("currentprice_btc");
                         var usdperfee = (txfee * usd_btc).toFixed(2)
-                        $("#dialogSellAssetPreview-btccost-usd").html("($"+usdperfee+")")
+                        $("#dialogSellAssetPreview-btccost-usd").html("("+usdperfee+"JPY)")
                         
                         
                         $("#dialogSellAssetPreview-btccost").html(txfee)
@@ -783,7 +790,7 @@ function sellAssetModal(asset, divisible, balance){
                     var sell_asset_div = divisible
                     var sell_qty = $("#dialogSellAssetPreview-amount").html()
                     
-                    var buy_asset = "BTC"
+                    var buy_asset = BTC
                     var buy_asset_div = "yes"
                     var buy_qty = $("#dialogSellAssetPreview-btctotal").html()
                     
@@ -797,7 +804,7 @@ function sellAssetModal(asset, divisible, balance){
                     createOrder_opreturn(currentaddr, sell_asset, sell_asset_div, sell_qty, buy_asset, buy_asset_div, buy_qty, expiration, transfee, passphrase, function(signedtx){
                         sendRawSignedTx(signedtx, function(status, txid){
                             if (status == "success") {
-                                dialogItself.getModalBody().find('#dialogSellAssetPreview-header').html("<div><div style='padding: 15px 0 15px 0; font-weight: bold; font-size: 18px;'>Transaction Sent!</div><i class='fa fa-check fa-3x' aria-hidden='true'></i></div><div style='padding: 15px 0 15px 0;'><a href='https://chain.so/tx/BTC/"+txid+"' target='_blank'>View your Transaction</a></div>")  
+                                dialogItself.getModalBody().find('#dialogSellAssetPreview-header').html("<div><div style='padding: 15px 0 15px 0; font-weight: bold; font-size: 18px;'>Transaction Sent!</div><i class='fa fa-check fa-3x' aria-hidden='true'></i></div><div style='padding: 15px 0 15px 0;'><a href='"+INSIGHT_SERVER+"/tx/"+txid+"' target='_blank' rel='noopener noreferrer'>View your Transaction</a></div>")  
                                 dialogItself.setClosable(false)
                                 
                                 $("body").data("sendTx", true)
@@ -844,9 +851,10 @@ function sellAssetModal(asset, divisible, balance){
 function btcpayModal(txdata){
     
     var btcpayDialog = new BootstrapDialog({
-        title: 'Send BTC to complete order',
+        title: 'Send MONA to complete order',
         message: function(dialog){
                 var $message = $('<div></div>').load('html/dialog-btcpay.html', function(){
+                    $(this).find(".BTC").html(BTC)
               
                     var btcAmount = (txdata.sell_qty / 100000000).toFixed(8)
                     var costandfees = (parseFloat(btcAmount)+0.0006).toFixed(8)
@@ -872,7 +880,7 @@ function btcpayModal(txdata){
                 action: function(dialogItself) {
     
                     var passphrase = sessionStorage.getItem("passphrase")
-                    var transfee_satoshis = 50000
+                    var transfee_satoshis = 54600
                     
                     console.log(txdata.sell_qty)
                     
@@ -883,7 +891,7 @@ function btcpayModal(txdata){
 
                         sendRawSignedTx(signedtx, function(status, txid){
                             if (status == "success") {
-                                dialogItself.getModalBody().find('#dialogBtcpay-container').html("<div><div style='padding: 15px 0 15px 0; font-weight: bold; font-size: 18px;'>Transaction Sent!</div><i class='fa fa-check fa-3x' aria-hidden='true'></i></div><div style='padding: 15px 0 15px 0;'><a href='https://chain.so/tx/BTC/"+txid+"' target='_blank'>View your Transaction</a></div>")
+                                dialogItself.getModalBody().find('#dialogBtcpay-container').html("<div><div style='padding: 15px 0 15px 0; font-weight: bold; font-size: 18px;'>Transaction Sent!</div><i class='fa fa-check fa-3x' aria-hidden='true'></i></div><div style='padding: 15px 0 15px 0;'><a href='"+INSIGHT_SERVER+"/tx/"+txid+"' target='_blank' rel='noopener noreferrer'>View your Transaction</a></div>")
                                 
                                 dialogItself.setClosable(false)
                                 $("body").data("sendTx", true)
@@ -934,11 +942,17 @@ function orderInfoModal(status) {
         title: 'Order Information',
         message: function(dialog){
                 if(status == "expired"){
-                    var $message = $('<div></div>').load('html/dialog-OrderInfoExpired.html', function(){})
+                    var $message = $('<div></div>').load('html/dialog-OrderInfoExpired.html', function(){
+                        $(this).find(".BTC").html(BTC)
+                    })
                 } else if(status == "completed") {
-                    var $message = $('<div></div>').load('html/dialog-OrderInfoCompleted.html', function(){})
+                    var $message = $('<div></div>').load('html/dialog-OrderInfoCompleted.html', function(){
+                        $(this).find(".BTC").html(BTC)
+                    })
                 } else if(status == "waiting") {
-                    var $message = $('<div></div>').load('html/dialog-OrderInfoWaiting.html', function(){})
+                    var $message = $('<div></div>').load('html/dialog-OrderInfoWaiting.html', function(){
+                        $(this).find(".BTC").html(BTC)
+                    })
                 }
             
                 return $message
@@ -963,7 +977,7 @@ function orderInfoModal(status) {
 
 function cancelOrderModal(asset, order_txid) {
  
-    var cancel_text = "<div id='cancelOrder-confirm'>Are you sure you want to cancel your "+asset+" sell order? <b>(0.0001 BTC fee)</b></div>"
+    var cancel_text = "<div id='cancelOrder-confirm'>Are you sure you want to cancel your "+asset+" sell order? <b>(0.0001 "+BTC+" fee)</b></div>"
     
     BootstrapDialog.confirm({
         title: "Cancel Order",
@@ -985,7 +999,7 @@ function cancelOrderModal(asset, order_txid) {
                 cancelOrder_opreturn(add_from, order_txid, transfee, passphrase, function(signedtx){
                     sendRawSignedTx(signedtx, function(status, txid){
                         if (status == "success") {
-                            $('#dialogBuyAsset-container').html("<div align='center'><div><div style='padding: 15px 0 15px 0; font-weight: bold; font-size: 18px;'>Transaction Sent!</div><i class='fa fa-check fa-3x' aria-hidden='true'></i></div><div style='padding: 15px 0 15px 0;'><a href='https://chain.so/tx/BTC/"+txid+"' target='_blank'>View your Transaction</a></div></div>")
+                            $('#dialogBuyAsset-container').html("<div align='center'><div><div style='padding: 15px 0 15px 0; font-weight: bold; font-size: 18px;'>Transaction Sent!</div><i class='fa fa-check fa-3x' aria-hidden='true'></i></div><div style='padding: 15px 0 15px 0;'><a href='"+INSIGHT_SERVER+"/tx/"+txid+"' target='_blank' rel='noopener noreferrer'>View your Transaction</a></div></div>")
                             $("body").data("sendTx", true)
                         } else {
                             $('#dialogBuyAsset-container').html("<div align='center' style='padding: 20px;'>Error</div>")

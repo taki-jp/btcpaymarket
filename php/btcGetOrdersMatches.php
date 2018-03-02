@@ -14,7 +14,7 @@ $client->authentication($cp_user, $cp_password);
 $address = array($_GET["addr"]);
 
 $block = 400000;
-$assets = array("BTC");
+$assets = array($BTC);
 $filters = array(array('field' => 'backward_asset', 'op' => 'IN', 'value' => $assets), array('field' => 'tx1_address', 'op' => 'IN', 'value' => $address));
 
 //array('field' => 'status', 'op' => 'IN', 'value' => array('pending', 'completed')), 
@@ -31,6 +31,7 @@ $filters = array(array('field' => 'asset', 'op' => 'IN', 'value' => $give_assets
 $issuances_result = $client->execute('get_issuances', array('filters' => $filters, 'filterop' => "AND"));
 
 $assets_divisible = array();
+$assets_divisible[$XCP] = 1;
 
 for($i=0; $i < count($issuances_result); $i++){
     $assets_divisible[$issuances_result[$i]["asset"]] = $issuances_result[$i]["divisible"];
